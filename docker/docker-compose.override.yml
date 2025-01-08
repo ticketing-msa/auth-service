@@ -1,0 +1,10 @@
+# docker-compose up
+services:
+  mysql:
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d # 개발용 초기화 스크립트 로드
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
