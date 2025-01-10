@@ -10,7 +10,7 @@ eureka:
 
 spring:
   application:
-    name: user-service
+    name: auth-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
