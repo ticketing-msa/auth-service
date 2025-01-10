@@ -6,11 +6,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ticketing.auth_service.dto.LoginRequest;
+import com.ticketing.auth_service.service.JwtProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,14 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
-	private final BCryptPasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
 			LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
 
-			String encode = passwordEncoder.encode(loginRequest.getPassword());
+			log.info("Username: {}", loginRequest.getUsername());
 
 			UsernamePasswordAuthenticationToken token =
 					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
@@ -45,7 +47,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		log.error("Authentication success");
+		String username = ((User)authResult.getPrincipal()).getUsername();
+		String jwt = jwtProvider.createJwt(username);
+		response.addHeader("Authorization", "Bearer " + jwt);
 	}
 
 	@Override

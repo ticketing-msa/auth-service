@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.ticketing.auth_service.service.JwtProvider;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,12 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
 	private final AuthenticationConfiguration authenticationConfiguration;
+	private final JwtProvider jwtProvider;
 
-	private static final String[] WHITE_LIST = {"/login"};
+	private static final String[] WHITE_LIST = {"/login", "/test"};
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(authenticationConfiguration), passwordEncoder());
+		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(authenticationConfiguration), jwtProvider);
 
 		http
 				.csrf(csrf -> csrf.disable()) //CSRF 보호를 비활성화. REST API 환경만 비활성화. Web Form 기반에서는 필요.
