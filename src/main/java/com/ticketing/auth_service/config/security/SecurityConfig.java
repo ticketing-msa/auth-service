@@ -23,7 +23,7 @@ public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JwtProvider jwtProvider;
 
-	private static final String[] WHITE_LIST = {"/login", "/test"};
+	private static final String[] WHITE_LIST = {"/login", "/swagger-ui/**", "/v3/api-docs/**"};
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
